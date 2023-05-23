@@ -26,12 +26,11 @@
         h1 {
             font-weight: 100;
         }
-        
-        video::-webkit-media-controls-volume-slider,
+        /* video::-webkit-media-controls-volume-slider,
         video::-webkit-media-controls-volume-meter,
         video::-webkit-media-controls-mute-button {
             display: none;
-        }
+        } */
         
         button {
             height: 87px;
@@ -92,7 +91,7 @@
 
 
 
-    <video id="video-player" src="test_video.mp4" controls muted></video>
+    <video id="video-player" src="bakery.mp4" controls></video>
 
     <br>
 
@@ -160,7 +159,7 @@
 
         audioPlayer.addEventListener('loadeddata', function() {
             console.log('MP3 loaded into audio player');
-            videoPlayer.muted = true;
+            // videoPlayer.muted = true;
             sync()
             if (!videoPlayer.paused)
                 audioPlayer.play();
@@ -187,6 +186,14 @@
             console.log('Video played');
             sync()
             audioPlayer.play();
+        });
+
+        videoPlayer.addEventListener('volumechange', function() {
+            // Set the volume of the audio player to match the video player
+            if (videoPlayer.volume == 0)
+                audioPlayer.volume = 0
+            else
+                audioPlayer.volume = videoPlayer.volume + 0.2;
         });
 
 
