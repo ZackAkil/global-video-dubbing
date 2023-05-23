@@ -2,55 +2,138 @@
 <html>
 
 <head>
-    <!-- ls dubs | sed "s/.*/'&',/" | tr -d "\n" > files.js -->
+    <title>Button Grid</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400&display=swap" rel="stylesheet">
 
-    <title>Many Video dubbing with Google Cloud</title>
     <style>
         body {
             font-family: 'Open Sans', sans-serif;
+            text-align: center;
         }
         
         video {
             width: 600px;
+            border-radius: 18px;
         }
         
-        select {
-            font-size: 1.2em;
-            border-radius: 20px;
-            padding: 10px;
+        h1 {
+            font-weight: 100;
+        }
+        
+        video::-webkit-media-controls-volume-slider,
+        video::-webkit-media-controls-volume-meter,
+        video::-webkit-media-controls-mute-button {
+            display: none;
+        }
+        
+        button {
+            height: 87px;
+            width: 200px;
+            cursor: pointer;
+            background-color: white;
+            border: solid #cccccc 2px;
+            margin: 2px;
+            border-radius: 18px;
+            font-size: 17px;
+            transition: all 0.1s ease;
+            color: #434343;
+        }
+        
+        button:hover {
+            border: solid #cccccc 5px;
+        }
+        
+        button.selected {
+            border: solid #4285F4 10px;
+            animation: throbbing 1s infinite;
+        }
+        
+        @keyframes throbbing {
+            0% {
+                border-color: #4285F4;
+                /* border-width: 5px; */
+            }
+            50% {
+                border-color: #86abe6;
+                /* border-width: 10px; */
+            }
+            100% {
+                border-color: #4285F4;
+                /* border-width: 5px; */
+            }
+        }
+        
+        .g-highlight {
+            font-weight: bold;
+            color: #4285F4;
+            ;
         }
     </style>
 </head>
 
 <body>
-    <h1>Global Video dubbing with Google Cloud</h1>
-    <!-- <input type="file" id="video-file" accept="video/*"> -->
+    <h1>Video Dubbing with <span class="g-highlight">Google Cloud Video Intelligence</span>, <span class="g-highlight">Translate</span>, & <span class="g-highlight">Text-to-Speech</span></h1>
+
+
+
+    <video id="video-player" src="test_video.mp4" controls muted></video>
+
+    <br><br>
+    <audio hidden id="audio-player" controls src="dubs/English [🇬🇧] (Original).mp3"></audio>
+    <div id="button-grid">
+    </div>
 
     <br>
-    <video id="video-player" src="test_video.mp4" controls muted></video>
-    <br>
-    <select id="audio-selection">
-        <option value="English [🇬🇧] (Original).mp3" selected>English [🇬🇧] (Original)</option>
-    </select>
-    <br>
-    <audio hidden id="audio-player" controls src="dubs/English [🇬🇧] (Original).mp3"></audio>
+    <h2>How it works</h2>
+    <img src="arcitecture.jpg" />
 
     <script>
-        const dubs = ['Afrikaans [🇿🇦].mp3', 'Arabic [🇦🇪].mp3', 'Bangla [🇮🇳].mp3', 'Basque [🇪🇸].mp3', 'Bulgarian [🇧🇬].mp3', 'Catalan [🇪🇸].mp3', 'Chinese (China) [🇨🇳].mp3',
+        const videoPlayer = document.getElementById('video-player');
+        const audioPlayer = document.getElementById('audio-player');
+
+
+        var buttonLabels = ['English [🇬🇧] (Original).mp3', 'Afrikaans [🇿🇦].mp3', 'Arabic [🇦🇪].mp3', 'Bangla [🇮🇳].mp3', 'Basque [🇪🇸].mp3', 'Bulgarian [🇧🇬].mp3', 'Catalan [🇪🇸].mp3', 'Chinese (China) [🇨🇳].mp3',
             'Chinese (Taiwan) [🇹🇼].mp3', 'Chinese [🇨🇳].mp3', 'Czech [🇨🇿].mp3', 'Danish [🇩🇰].mp3', 'Dutch [🇧🇪].mp3', 'Filipino [🇵🇭].mp3',
             'Finnish [🇫🇮].mp3', 'French [🇨🇦].mp3', 'Galician [🇪🇸].mp3', 'German [🇩🇪].mp3', 'Greek [🇬🇷].mp3', 'Gujarati [🇮🇳].mp3', 'Hebrew [🇮🇱].mp3', 'Hindi [🇮🇳].mp3',
             'Hungarian [🇭🇺].mp3', 'Icelandic [🇮🇸].mp3', 'Indonesian [🇮🇩].mp3', 'Italian [🇮🇹].mp3', 'Japanese [🇯🇵].mp3', 'Kannada [🇮🇳].mp3', 'Korean [🇰🇷].mp3', 'Latvian [🇱🇻].mp3', 'Lithuanian [🇱🇹].mp3',
             'Malay [🇲🇾].mp3', 'Malayalam [🇮🇳].mp3', 'Marathi [🇮🇳].mp3', 'Norwegian [🇳🇴].mp3', 'Polish [🇵🇱].mp3', 'Portuguese [🇧🇷].mp3', 'Punjabi [🇮🇳].mp3', 'Romanian [🇷🇴].mp3', 'Russian [🇷🇺].mp3', 'Serbian [🇷🇸].mp3',
             'Slovak [🇸🇰].mp3', 'Spanish [🇪🇸].mp3', 'Swedish [🇸🇪].mp3', 'Tamil [🇮🇳].mp3', 'Telugu [🇮🇳].mp3', 'Thai [🇹🇭].mp3', 'Turkish [🇹🇷].mp3', 'Ukrainian [🇺🇦].mp3', 'Vietnamese [🇻🇳].mp3'
         ]
+        var buttonGrid = document.getElementById('button-grid');
 
-        const dropdown = document.getElementById('audio-selection');
-        const videoPlayer = document.getElementById('video-player');
-        const audioPlayer = document.getElementById('audio-player');
+        for (var i = 0; i < buttonLabels.length; i++) {
+
+            const label = buttonLabels[i]
+            const button = document.createElement('button');
+
+            button.textContent = label.split('.')[0].replace(/\[|\]/g, "");
+            button.dataset.track = label;
+            button.addEventListener('click', function(event) {
+                // Unselect all buttons
+                var buttons = buttonGrid.getElementsByTagName('button');
+                for (var i = 0; i < buttons.length; i++) {
+                    buttons[i].classList.remove('selected');
+                }
+                // Select the clicked button
+                button.classList.add('selected');
+                console.log(event.target.dataset.track)
+
+                let audioFile = 'dubs/' + event.target.dataset.track;
+                audioPlayer.src = audioFile;
+            });
+            buttonGrid.appendChild(button);
+
+            // click first button
+            if (i == 0) {
+                button.dispatchEvent(new Event("click"));
+            }
+        }
+
+
+
 
         function sync() {
             audioPlayer.currentTime = videoPlayer.currentTime;
@@ -86,28 +169,8 @@
             sync()
             audioPlayer.play();
         });
-
-
-        dubs.forEach(function(option) {
-            let optionElement = document.createElement('option');
-            optionElement.text = option.split('.')[0];
-            optionElement.value = option;
-            dropdown.add(optionElement);
-        });
-
-        // document.getElementById('video-file').addEventListener('change', function(event) {
-        //     var videoPlayer = document.getElementById('video-player');
-        //     var file = event.target.files[0];
-        //     var videoURL = URL.createObjectURL(file);
-        //     videoPlayer.src = videoURL;
-        // });
-
-        document.getElementById('audio-selection').addEventListener('change', function(event) {
-            let audioFile = 'dubs/' + event.target.value;
-            audioPlayer.src = audioFile;
-
-        });
     </script>
+
 </body>
 
 </html>
