@@ -69,9 +69,17 @@
         .g-highlight {
             font-weight: bold;
             color: #4285F4;
-            ;
+        }
+        
+        #translation {
+            max-width: 1200px;
+            display: inline-block;
+            margin: 27px 0;
+            transition: all 0.1s ease;
         }
     </style>
+
+    <script src="translations.js"></script>
 </head>
 
 <body>
@@ -81,7 +89,10 @@
 
     <video id="video-player" src="test_video.mp4" controls muted></video>
 
-    <br><br>
+    <br>
+
+    <p id="translation"></p>
+
     <audio hidden id="audio-player" controls src="dubs/English [🇬🇧] (Original).mp3"></audio>
     <div id="button-grid">
     </div>
@@ -93,6 +104,9 @@
     <script>
         const videoPlayer = document.getElementById('video-player');
         const audioPlayer = document.getElementById('audio-player');
+        const translationText = document.getElementById('translation');
+
+        var current_language = 'English'
 
 
         var buttonLabels = ['English [🇬🇧] (Original).mp3', 'Afrikaans [🇿🇦].mp3', 'Arabic [🇦🇪].mp3', 'Bangla [🇮🇳].mp3', 'Basque [🇪🇸].mp3', 'Bulgarian [🇧🇬].mp3', 'Catalan [🇪🇸].mp3', 'Chinese (China) [🇨🇳].mp3',
@@ -120,9 +134,11 @@
                 // Select the clicked button
                 button.classList.add('selected');
                 console.log(event.target.dataset.track)
-
+                current_language = event.target.dataset.track.split(' ')[0]
                 let audioFile = 'dubs/' + event.target.dataset.track;
                 audioPlayer.src = audioFile;
+
+                display_current_translation()
             });
             buttonGrid.appendChild(button);
 
@@ -131,8 +147,6 @@
                 button.dispatchEvent(new Event("click"));
             }
         }
-
-
 
 
         function sync() {
@@ -169,6 +183,34 @@
             sync()
             audioPlayer.play();
         });
+
+
+        videoPlayer.addEventListener('timeupdate', function() {
+            // The 'timeupdate' event is triggered when the time of the video changes
+            // console.log('Video time changed:', videoPlayer.currentTime);
+            display_current_translation()
+
+            // Call your custom function or perform desired actions here
+            // ...
+        });
+
+        function display_current_translation() {
+
+            let translation_index = findEncapsulatingSegmentIndex(translations.segment_times, videoPlayer.currentTime)
+            let current_translation = translations.translations[current_language][translation_index]
+            translationText.textContent = current_translation
+        }
+
+
+        function findEncapsulatingSegmentIndex(segments, currentTime) {
+            for (let i = 0; i < segments.length; i++) {
+                const segment = segments[i];
+                if (currentTime >= segment.start_time && currentTime <= segment.end_time) {
+                    return i; // Found the encapsulating segment
+                }
+            }
+            return -1; // Encapsulating segment not found
+        }
     </script>
 
 </body>
