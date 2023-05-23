@@ -190,7 +190,7 @@
 
         videoPlayer.addEventListener('volumechange', function() {
             // Set the volume of the audio player to match the video player
-            if (videoPlayer.volume == 0)
+            if ((videoPlayer.volume == 0) || (videoPlayer.muted))
                 audioPlayer.volume = 0
             else
                 audioPlayer.volume = videoPlayer.volume + 0.2;
